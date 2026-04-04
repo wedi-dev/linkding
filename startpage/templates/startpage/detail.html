@@ -1,0 +1,85 @@
+{% extends "shared/layout.html" %}
+{% block head %}
+  {% with page_title=page.name %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="start-page-detail" aria-labelledby="main-heading">
+    <div class="detail-header">
+      <a href="{% url 'startpage:hub' %}" class="btn btn-link">&larr; Back</a>
+      <h1 id="main-heading">{{ page.name }}</h1>
+      <div class="header-actions">
+        {% include 'startpage/ellipsis_toggle.html' %}
+        <a href="{% url 'startpage:page.edit' start_page.id %}" class="btn btn-link">Edit</a>
+        <a href="{% url 'startpage:widget.new' start_page.id %}" class="btn">Add widget</a>
+      </div>
+    </div>
+    {% include 'shared/messages.html' %}
+    {% if page.is_empty %}
+      <div class="empty">
+        <p class="empty-title h5">No widgets on this page</p>
+        <p class="empty-subtitle">
+          <a href="{% url 'startpage:widget.new' start_page.id %}">Add your first widget</a>
+        </p>
+      </div>
+    {% else %}
+      <form action="{% url 'startpage:widget.action' start_page.id %}" method="post">
+        {% csrf_token %}
+        <div class="widget-list">
+          {% for widget in page.widgets %}
+            <section class="widget-section">
+              <div class="widget-header">
+                <h2>{{ widget.name }}</h2>
+                <span class="badge">{{ widget.total_count }}</span>
+                <div class="widget-actions">
+                  <a href="{% url 'startpage:widget.edit' start_page.id widget.id %}"
+                     class="btn btn-link btn-sm">Edit</a>
+                  <button type="submit"
+                          name="remove_widget"
+                          value="{{ widget.id }}"
+                          class="btn btn-link btn-sm"
+                          data-confirm>Remove</button>
+                </div>
+              </div>
+              <div class="widget-body">
+                {% if widget.groups %}
+                  <div class="item-grid">
+                    {% for group in widget.groups %}
+                      <a href="{% url 'startpage:domain.detail' start_page.id group.domain %}"
+                         class="item-box">
+                        <div class="item-box-top">
+                          <span class="item-box-name">{{ group.domain }}</span>
+                          <span class="item-box-badge">{{ group.count }}</span>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="item-grid">
+                    {% for item in widget.items %}
+                      <a href="{{ item.url }}"
+                         target="{{ widget.link_target }}"
+                         rel="noopener"
+                         class="item-box">
+                        <div class="item-box-top">
+                          {% if widget.show_favicons and item.favicon_file %}
+                            <img class="favicon"
+                                 src="/static/{{ item.favicon_file }}"
+                                 width="16" height="16"
+                                 alt=""
+                                 loading="lazy">
+                          {% endif %}
+                          <span class="item-box-name">{{ item.title }}</span>
+                        </div>
+                        <span class="item-box-url">{{ item.url }}</span>
+                      </a>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </section>
+          {% endfor %}
+        </div>
+      </form>
+    {% endif %}
+  </main>
+{% endblock %}

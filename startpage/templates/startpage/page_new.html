@@ -1,0 +1,18 @@
+{% extends 'shared/layout.html' %}
+{% block head %}
+  {% with page_title="New start page - Linkding" %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="crud-page" aria-labelledby="main-heading">
+    <div class="section-header">
+      <h1 id="main-heading">New start page</h1>
+    </div>
+    {% include 'shared/messages.html' %}
+    <form action="{% url 'startpage:page.new' %}"
+          method="post"
+          novalidate>
+      {% csrf_token %}
+      {% include 'startpage/page_form.html' %}
+    </form>
+  </main>
+{% endblock %}

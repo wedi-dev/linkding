@@ -146,6 +146,9 @@ urlpatterns += [
     ),
 ]
 
+# Start page
+urlpatterns.append(path("start/", include("startpage.urls")))
+
 # Admin
 urlpatterns.append(path("admin/", linkding_admin_site.urls))
 

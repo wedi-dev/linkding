@@ -40,6 +40,7 @@ USE_X_FORWARDED_HOST = os.getenv("LD_USE_X_FORWARDED_HOST", False) in (
 
 INSTALLED_APPS = [
     "bookmarks.apps.BookmarksConfig",
+    "startpage.apps.StartpageConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

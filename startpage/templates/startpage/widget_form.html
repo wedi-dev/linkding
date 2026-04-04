@@ -1,0 +1,68 @@
+{% load shared %}
+<ld-widget-form>
+  <div class="form-group">
+    {% formlabel form.name "Name" %}
+    {% formfield form.name %}
+    {{ form.name.errors }}
+  </div>
+  <div class="form-group">
+    {% formlabel form.widget_type "Type" %}
+    {% formfield form.widget_type %}
+    {{ form.widget_type.errors }}
+  </div>
+  <div class="form-group widget-field-bundle">
+    {% formlabel form.bundle "Bundle" %}
+    {% formfield form.bundle has_help=True %}
+    {{ form.bundle.errors }}
+    {% formhelp form.bundle %}
+      Select a bundle to show bookmarks matching its filters.
+    {% endformhelp %}
+  </div>
+  <div class="form-group widget-field-tag">
+    {% formlabel form.tag_name "Tag" %}
+    {% formfield form.tag_name has_help=True %}
+    {{ form.tag_name.errors }}
+    {% formhelp form.tag_name %}
+      Show bookmarks with this tag.
+    {% endformhelp %}
+  </div>
+  <div class="form-group widget-field-filter">
+    {% formlabel form.filter_query "Search query" %}
+    {% formfield form.filter_query has_help=True %}
+    {{ form.filter_query.errors }}
+    {% formhelp form.filter_query %}
+      Filter bookmarks by search query. Supports #tags and boolean operators.
+    {% endformhelp %}
+  </div>
+  <div class="form-group widget-field-filter">
+    {% formlabel form.filter_unread "Reading state" %}
+    {% formfield form.filter_unread %}
+    {{ form.filter_unread.errors }}
+  </div>
+  <div class="form-group widget-field-filter">
+    {% formlabel form.filter_shared "Sharing state" %}
+    {% formfield form.filter_shared %}
+    {{ form.filter_shared.errors }}
+  </div>
+  <div class="form-group">
+    {% formlabel form.sort "Sort" %}
+    {% formfield form.sort %}
+    {{ form.sort.errors }}
+  </div>
+  <div class="form-group">
+    {% formlabel form.max_items "Max items" %}
+    {% formfield form.max_items has_help=True %}
+    {{ form.max_items.errors }}
+    {% formhelp form.max_items %}
+      Maximum number of bookmarks to show in this widget.
+    {% endformhelp %}
+  </div>
+</ld-widget-form>
+<div class="form-footer d-flex mt-4">
+  <input type="submit"
+         name="save"
+         value="Save"
+         class="btn btn-primary btn-wide">
+  <a href="{% url 'startpage:detail' start_page.id %}"
+     class="btn btn-wide ml-auto">Cancel</a>
+</div>

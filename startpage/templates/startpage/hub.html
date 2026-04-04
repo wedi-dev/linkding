@@ -1,0 +1,36 @@
+{% extends "shared/layout.html" %}
+{% load static %}
+{% block head %}
+  {% with page_title="Start Page - Linkding" %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="start-page crud-page" aria-labelledby="main-heading">
+    <div class="crud-header">
+      <h1 id="main-heading">Start Pages</h1>
+      <a href="{% url 'startpage:page.new' %}" class="btn">Add start page</a>
+    </div>
+    {% include 'shared/messages.html' %}
+    {% if hub.is_empty %}
+      <div class="empty">
+        <p class="empty-title h5">You have no start pages yet</p>
+        <p class="empty-subtitle">Create your first start page to get started</p>
+      </div>
+    {% else %}
+      <form action="{% url 'startpage:page.action' %}" method="post">
+        {% csrf_token %}
+        <div class="start-page-grid">
+          {% for page in hub.pages %}
+            <a href="{% url 'startpage:detail' page.id %}"
+               class="start-page-card"
+               data-page-id="{{ page.id }}">
+              <span class="card-name">{{ page.name }}</span>
+              <span class="card-badge">{{ page.widget_count }} widget{{ page.widget_count|pluralize }}</span>
+            </a>
+          {% endfor %}
+        </div>
+        <input type="submit" name="move_page" value="" class="d-none">
+        <input type="hidden" name="move_position" value="">
+      </form>
+    {% endif %}
+  </main>
+{% endblock %}

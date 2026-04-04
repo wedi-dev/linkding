@@ -1,0 +1,23 @@
+<div class="ellipsis-toggle" data-ellipsis-toggle>
+  <button type="button" class="active" data-mode="end" title="Ellipsis at end">abc…</button>
+  <button type="button" data-mode="start" title="Ellipsis at start">…xyz</button>
+</div>
+<script>
+  (function() {
+    document.querySelectorAll('[data-ellipsis-toggle]').forEach(function(toggle) {
+      var buttons = toggle.querySelectorAll('button');
+      var main = toggle.closest('main');
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          buttons.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          if (btn.dataset.mode === 'start') {
+            main.classList.add('ellipsis-start');
+          } else {
+            main.classList.remove('ellipsis-start');
+          }
+        });
+      });
+    });
+  })();
+</script>

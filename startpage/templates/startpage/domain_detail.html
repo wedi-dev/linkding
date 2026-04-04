@@ -1,0 +1,48 @@
+{% extends "shared/layout.html" %}
+{% block head %}
+  {% with page_title=domain.domain_key %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="start-page-detail" aria-labelledby="main-heading">
+    <div class="detail-header">
+      <a href="{% url 'startpage:detail' start_page.id %}" class="btn btn-link">&larr; Back</a>
+      <h1 id="main-heading">{{ domain.domain_key }}</h1>
+      <div class="header-actions">
+        {% include 'startpage/ellipsis_toggle.html' %}
+        <span class="badge">{{ domain.total_count }} bookmark{{ domain.total_count|pluralize }}</span>
+        {% if domain.domain_url %}
+          <a href="{{ domain.domain_url }}"
+             target="{{ domain.link_target }}"
+             rel="noopener"
+             class="btn btn-link">Open domain &#8599;</a>
+        {% endif %}
+      </div>
+    </div>
+    {% if domain.items %}
+      <div class="item-grid">
+        {% for item in domain.items %}
+          <a href="{{ item.url }}"
+             target="{{ domain.link_target }}"
+             rel="noopener"
+             class="item-box">
+            <div class="item-box-top">
+              {% if domain.show_favicons and item.favicon_file %}
+                <img class="favicon"
+                     src="/static/{{ item.favicon_file }}"
+                     width="16" height="16"
+                     alt=""
+                     loading="lazy">
+              {% endif %}
+              <span class="item-box-name">{{ item.title }}</span>
+            </div>
+            <span class="item-box-url">{{ item.url }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <p class="empty-title h5">No bookmarks for this domain</p>
+      </div>
+    {% endif %}
+  </main>
+{% endblock %}

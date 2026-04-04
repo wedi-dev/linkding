@@ -1,0 +1,13 @@
+<a href="{{ item.url }}"
+   target="{{ link_target }}"
+   rel="noopener"
+   class="bookmark-box">
+  {% if show_favicons and item.favicon_file %}
+    <img class="favicon"
+         src="/static/{{ item.favicon_file }}"
+         width="16" height="16"
+         alt=""
+         loading="lazy">
+  {% endif %}
+  <span class="bookmark-title">{{ item.title }}</span>
+</a>

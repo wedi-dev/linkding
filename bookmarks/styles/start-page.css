@@ -1,0 +1,219 @@
+/* Start page hub */
+.start-page-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--unit-4);
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.start-page-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--unit-5);
+  min-height: 64px;
+  border: solid 1px var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--body-color-contrast);
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--contrast-20, var(--body-color-contrast));
+    text-decoration: none;
+    color: var(--text-color);
+  }
+
+  & .card-name {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+  }
+
+  & .card-badge {
+    font-size: var(--font-size-sm);
+    color: var(--secondary-text-color);
+  }
+}
+
+/* Start page detail + domain detail header */
+.start-page-detail {
+  & .detail-header {
+    display: flex;
+    align-items: center;
+    gap: var(--unit-3);
+    margin-bottom: var(--unit-6);
+    flex-wrap: wrap;
+
+    & h1 {
+      font-size: var(--font-size-xl);
+      margin: 0;
+      flex: 1;
+    }
+
+    & .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--unit-2);
+    }
+  }
+}
+
+/* Widget sections */
+.widget-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--unit-8);
+}
+
+.widget-section {
+  & .widget-header {
+    display: flex;
+    align-items: center;
+    gap: var(--unit-2);
+    padding-bottom: var(--unit-3);
+    border-bottom: solid 1px var(--border-color);
+    margin-bottom: var(--unit-4);
+
+    & h2 {
+      font-size: var(--font-size-lg);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    & .badge {
+      font-size: var(--font-size-sm);
+      color: var(--secondary-text-color);
+    }
+
+    & .widget-actions {
+      margin-left: auto;
+      display: flex;
+      gap: var(--unit-1);
+
+      & .btn {
+        padding: 0;
+        height: auto;
+        font-size: var(--font-size-sm);
+      }
+    }
+  }
+}
+
+/* Shared grid: always 2 col 50/50 */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--unit-3);
+}
+
+/* Shared box style for domains and bookmarks */
+.item-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--unit-1);
+  padding: var(--unit-4);
+  min-height: 56px;
+  min-width: 0;
+  border: solid 1px var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--body-color-contrast);
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--contrast-20, var(--body-color-contrast));
+    text-decoration: none;
+    color: var(--text-color);
+  }
+
+  & .item-box-top {
+    display: flex;
+    align-items: center;
+    gap: var(--unit-2);
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  & .item-box-name {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .item-box-url {
+    font-size: var(--font-size-sm);
+    color: var(--secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .item-box-badge {
+    font-size: var(--font-size-sm);
+    color: var(--secondary-text-color);
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  & .favicon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
+
+/* Ellipsis direction toggle */
+.ellipsis-toggle {
+  display: inline-flex;
+  border: solid 1px var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+
+  & button {
+    padding: var(--unit-1) var(--unit-3);
+    border: none;
+    background: transparent;
+    color: var(--secondary-text-color);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    line-height: 1.4;
+
+    &.active {
+      background: var(--primary-color);
+      color: var(--contrast-text-color);
+    }
+
+    &:not(:last-child) {
+      border-right: solid 1px var(--border-color);
+    }
+  }
+}
+
+/* Start-ellipsis mode: show end of text instead of beginning */
+.ellipsis-start .item-box-name,
+.ellipsis-start .item-box-url {
+  direction: rtl;
+}
+
+/* Mobile: bigger touch targets */
+@media (max-width: 600px) {
+  .start-page-detail .detail-header {
+    & h1 {
+      width: 100%;
+      order: -1;
+    }
+  }
+
+  .item-box {
+    min-height: 60px;
+    padding: var(--unit-4) var(--unit-3);
+  }
+}

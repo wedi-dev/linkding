@@ -11,6 +11,7 @@ import "./components/modal.js";
 import "./components/search-autocomplete.js";
 import "./components/tag-autocomplete.js";
 import "./components/upload-button.js";
+import "./components/smart-link.js";
 import "./components/start-widget.js";
 import "./components/widget-form.js";
 import "./shortcuts.js";

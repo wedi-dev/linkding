@@ -8,7 +8,7 @@ from bookmarks.widgets import (
     FormSelect,
     TagAutocomplete,
 )
-from startpage.models import StartPage, StartPageWidget
+from startpage.models import SmartLink, StartPage, StartPageWidget
 
 
 class StartPageForm(forms.ModelForm):
@@ -72,3 +72,18 @@ class StartPageWidgetForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs, error_class=FormErrorList)
         self.fields["bundle"].queryset = BookmarkBundle.objects.filter(owner=user)
+
+
+class SmartLinkForm(forms.ModelForm):
+    name = forms.CharField(max_length=256, widget=FormInput)
+    url_template = forms.CharField(
+        max_length=2048,
+        widget=FormInput(attrs={"placeholder": "https://jira.com/browse/PAC-{ticket:Ticket number}"}),
+    )
+
+    class Meta:
+        model = SmartLink
+        fields = ["name", "url_template"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, error_class=FormErrorList)

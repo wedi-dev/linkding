@@ -1,0 +1,46 @@
+{% extends 'shared/layout.html' %}
+{% block head %}
+  {% with page_title=smart_link.name %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="start-page-detail" aria-labelledby="main-heading">
+    <div class="detail-header">
+      <a href="{% url 'startpage:detail' start_page.id %}" class="btn btn-link">&larr; Back</a>
+      <h1 id="main-heading">{{ smart_link.name }}</h1>
+    </div>
+    <ld-smart-link-open>
+      <form action="{% url 'startpage:smart_link.open' start_page.id smart_link.id %}"
+            method="post"
+            data-turbo="false"
+            novalidate>
+        {% csrf_token %}
+        {% for param in parameters %}
+          <div class="form-group smart-link-param">
+            <label class="form-label" for="param_{{ param.name }}">{{ param.label }}</label>
+            <input type="text"
+                   class="form-input smart-link-param-input"
+                   id="param_{{ param.name }}"
+                   name="param_{{ param.name }}"
+                   data-param="{{ param.name }}"
+                   value="{{ param.last_value }}"
+                   autocomplete="off">
+            {% if param.recent_values %}
+              <div class="smart-link-chips">
+                {% for val in param.recent_values %}
+                  <button type="button"
+                          class="smart-link-chip"
+                          data-param="{{ param.name }}">{{ val }}</button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <div class="form-footer d-flex mt-4">
+          <input type="submit"
+                 value="Open"
+                 class="btn btn-primary btn-wide">
+        </div>
+      </form>
+    </ld-smart-link-open>
+  </main>
+{% endblock %}

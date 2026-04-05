@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -26,6 +28,80 @@ class StartPage(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+# Regex to find {name} or {name:Label} placeholders in URL templates
+_PLACEHOLDER_RE = re.compile(r"\{([^}:]+)(?::([^}]+))?\}")
+
+
+def parse_url_template(template: str) -> list[dict]:
+    """Parse URL template and extract placeholder parameters.
+
+    Syntax:
+        {name}        — placeholder with name as label
+        {name:Label}  — placeholder with explicit label
+
+    Returns list of dicts: [{"name": "ticket", "label": "Ticket number", "order": 0}]
+    """
+    params = []
+    for i, match in enumerate(_PLACEHOLDER_RE.finditer(template)):
+        name = match.group(1).strip()
+        label = (match.group(2) or "").strip()
+        params.append({"name": name, "label": label, "order": i})
+    return params
+
+
+def resolve_url_template(template: str, values: dict) -> str:
+    """Replace placeholders in URL template with provided values."""
+
+    def replacer(match):
+        name = match.group(1).strip()
+        return values.get(name, match.group(0))
+
+    return _PLACEHOLDER_RE.sub(replacer, template)
+
+
+class SmartLink(models.Model):
+    start_page = models.ForeignKey(
+        StartPage, on_delete=models.CASCADE, related_name="smart_links"
+    )
+    name = models.CharField(max_length=256)
+    url_template = models.CharField(max_length=2048)
+    order = models.IntegerField(default=0)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.name
+
+
+class SmartLinkParameter(models.Model):
+    smart_link = models.ForeignKey(
+        SmartLink, on_delete=models.CASCADE, related_name="parameters"
+    )
+    name = models.CharField(max_length=64)
+    label = models.CharField(max_length=128, blank=True)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.label or self.name
+
+
+class SmartLinkValue(models.Model):
+    parameter = models.ForeignKey(
+        SmartLinkParameter, on_delete=models.CASCADE, related_name="values"
+    )
+    value = models.CharField(max_length=256)
+    used_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-used_at"]
 
 
 class StartPageWidget(models.Model):

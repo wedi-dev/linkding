@@ -1,8 +1,9 @@
 from django.db import models
 from django.db.models import Count
 
-from startpage.models import StartPage, StartPageWidget
+from startpage.models import SmartLink, StartPage, StartPageWidget
 from startpage.queries import group_bookmarks_by_domain, query_widget_bookmarks
+from startpage.services import get_smart_link_data
 from startpage.utils import extract_domain, get_registrable_domain
 
 
@@ -67,7 +68,11 @@ class StartPageDetailContext:
             )
             for w in widgets
         ]
-        self.is_empty = len(self.widgets) == 0
+
+        smart_links = SmartLink.objects.filter(start_page=start_page).order_by("order")
+        self.smart_links = [get_smart_link_data(sl) for sl in smart_links]
+
+        self.is_empty = len(self.widgets) == 0 and len(self.smart_links) == 0
         self.show_favicons = profile.enable_favicons
         self.link_target = profile.bookmark_link_target
 

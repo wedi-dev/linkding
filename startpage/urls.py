@@ -30,4 +30,25 @@ urlpatterns = [
         views.widget_action,
         name="widget.action",
     ),
+    # Smart links
+    path(
+        "<int:page_id>/smart-links/new",
+        views.smart_link_new,
+        name="smart_link.new",
+    ),
+    path(
+        "<int:page_id>/smart-links/<int:smart_link_id>/edit",
+        views.smart_link_edit,
+        name="smart_link.edit",
+    ),
+    path(
+        "<int:page_id>/smart-links/action",
+        views.smart_link_action,
+        name="smart_link.action",
+    ),
+    path(
+        "<int:page_id>/smart-links/<int:smart_link_id>/open",
+        views.smart_link_open,
+        name="smart_link.open",
+    ),
 ]

@@ -1,0 +1,18 @@
+{% extends 'shared/layout.html' %}
+{% block head %}
+  {% with page_title="Edit smart link - Linkding" %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="crud-page" aria-labelledby="main-heading">
+    <div class="section-header">
+      <h1 id="main-heading">Edit smart link</h1>
+    </div>
+    {% include 'shared/messages.html' %}
+    <form action="{% url 'startpage:smart_link.edit' start_page.id smart_link.id %}"
+          method="post"
+          novalidate>
+      {% csrf_token %}
+      {% include 'startpage/smart_link_form.html' %}
+    </form>
+  </main>
+{% endblock %}

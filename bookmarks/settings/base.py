@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
     "huey.contrib.djhuey",
     "mozilla_django_oidc",
 ]
@@ -142,6 +143,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 100,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "linkding API",
+    "DESCRIPTION": "Self-hosted bookmark manager API. Includes bookmarks, tags, bundles and start page management.",
+    "VERSION": "1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_AUTHENTICATION": None,
 }
 
 # URL validation flag

@@ -1,0 +1,52 @@
+{% extends "shared/layout.html" %}
+{% block head %}
+  {% with page_title="Start Page API Docs - Linkding" %}{{ block.super }}{% endwith %}
+{% endblock %}
+{% block content %}
+  <main class="crud-page" aria-labelledby="main-heading">
+    <div class="crud-header">
+      <h1 id="main-heading">API documentation</h1>
+    </div>
+    <p>
+      The linkding HTTP API exposes CRUD operations for bookmarks, tags, bundles
+      and start page objects (pages, widgets, smart links). All endpoints share
+      the same token auth scheme, so a single API token unlocks the whole API.
+    </p>
+    <h2>Authentication</h2>
+    <p>
+      Create a token from
+      <a href="{% url 'linkding:settings.integrations' %}">Settings &rarr; Integrations</a>
+      and pass it in the <code>Authorization</code> header:
+    </p>
+    <pre><code>Authorization: Token &lt;your-token&gt;</code></pre>
+    <p><code>Bearer</code> is accepted as an alias.</p>
+
+    <h2>Browse</h2>
+    <ul>
+      <li>
+        <a href="{% url 'startpage:api_docs.swagger' %}">Swagger UI</a>
+        — interactive explorer for every endpoint
+      </li>
+      <li>
+        <a href="{% url 'startpage:api_docs.redoc' %}">Redoc</a>
+        — reference-style reading view
+      </li>
+      <li>
+        <a href="{% url 'startpage:api_docs.schema' %}">OpenAPI schema (YAML)</a>
+        — raw spec, feed it to your agent / codegen
+      </li>
+      <li>
+        <a href="{% url 'startpage:api_docs.guide' %}">Curl cheatsheet (markdown)</a>
+        — quickstart with copy-paste curl commands
+      </li>
+    </ul>
+
+    <h2>Start page preview as markdown</h2>
+    <p>
+      Every start page exposes a read-only markdown snapshot at
+      <code>/start/api/pages/&lt;id&gt;/preview/</code> when you send
+      <code>Accept: text/markdown</code>. Paste it into an agent context to brief
+      them on the current state of a page.
+    </p>
+  </main>
+{% endblock %}

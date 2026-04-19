@@ -134,7 +134,7 @@ class DetailViewTestCase(TestCase, BookmarkFactoryMixin):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "AX")
-        self.assertContains(response, 'class="item-tile-edit"')
+        self.assertContains(response, 'class="item-box-edit"')
 
     def test_404_on_other_users_page(self):
         other_user = self.setup_user()

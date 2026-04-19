@@ -170,32 +170,45 @@
   }
 }
 
-/* Bookmark tile wraps an item-box plus an edit affordance */
-.item-tile {
-  position: relative;
-  display: flex;
-  min-width: 0;
+/* Bookmark tiles: whole card is a link (via an absolute-positioned overlay
+   anchor) so we can also nest an edit icon in the top-right corner.
+   Using an overlay instead of nested <a> because HTML forbids nested links. */
+.item-box-link {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--border-radius);
+  text-decoration: none;
 
-  & .item-box {
-    flex: 1;
-    min-width: 0;
-    padding-right: calc(var(--unit-4) + 24px);
+  &:hover,
+  &:focus-visible {
+    text-decoration: none;
   }
 }
 
-.item-tile-edit {
-  position: absolute;
-  top: 4px;
-  right: 4px;
+/* Visible content sits above the overlay but does not capture clicks,
+   so clicking text propagates to the overlay link. */
+.item-box .item-box-top,
+.item-box .item-box-url {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* The edit icon re-enables pointer events so it captures its own clicks. */
+.item-box-edit {
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  flex-shrink: 0;
   border-radius: var(--border-radius);
   color: var(--secondary-text-color);
-  opacity: 0.6;
-  transition: opacity 0.15s, background 0.15s;
+  opacity: 0.55;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
 
   &:hover,
   &:focus-visible {
@@ -207,7 +220,7 @@
 }
 
 @media (max-width: 600px) {
-  .item-tile-edit {
+  .item-box-edit {
     opacity: 0.85;
   }
 }

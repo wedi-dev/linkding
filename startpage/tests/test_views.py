@@ -71,11 +71,7 @@ class DetailViewTestCase(TestCase, BookmarkFactoryMixin):
         self.assertContains(response, "Test Bookmark")
 
     def test_renders_domain_groups(self):
-        page = StartPage.objects.create(
-            name="Grouped",
-            owner=self.user,
-            domain_grouping=StartPage.DOMAIN_GROUPING_DOMAIN,
-        )
+        page = StartPage.objects.create(name="Grouped", owner=self.user)
         self.setup_bookmark(url="https://example.com/a", title="Link A")
         self.setup_bookmark(url="https://example.com/b", title="Link B")
         self.setup_bookmark(url="https://other.org/c", title="Link C")
@@ -84,13 +80,61 @@ class DetailViewTestCase(TestCase, BookmarkFactoryMixin):
             name="All",
             widget_type=StartPageWidget.WIDGET_TYPE_FILTER,
             filter_query="",
+            domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
         )
 
         response = self.client.get(reverse("startpage:detail", args=[page.id]))
 
         self.assertEqual(response.status_code, 200)
+        # example.com has 2 bookmarks → grouped as domain box
         self.assertContains(response, "example.com")
-        self.assertContains(response, "other.org")
+        # other.org has 1 bookmark → promoted to leaf, rendered as bookmark tile
+        self.assertContains(response, "Link C")
+        self.assertContains(response, "https://other.org/c")
+
+    def test_single_bookmark_group_rendered_as_leaf_with_edit_link(self):
+        page = StartPage.objects.create(name="Grouped", owner=self.user)
+        self.setup_bookmark(url="https://solo.example/only", title="Only One")
+        StartPageWidget.objects.create(
+            start_page=page,
+            name="All",
+            widget_type=StartPageWidget.WIDGET_TYPE_FILTER,
+            filter_query="",
+            domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
+        )
+        # Exactly one bookmark for "solo.example" — should become a leaf, not a domain box
+        from bookmarks.models import Bookmark
+
+        bm = Bookmark.objects.get(url="https://solo.example/only")
+
+        response = self.client.get(reverse("startpage:detail", args=[page.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Only One")
+        # Edit link to bookmarks.edit with return_url pointing back to start page
+        self.assertContains(
+            response,
+            f"/bookmarks/{bm.id}/edit?return_url=/start/{page.id}",
+        )
+        # Ensure no domain_detail link is emitted for this single-bookmark group
+        self.assertNotContains(response, f"/start/{page.id}/domain/solo.example")
+
+    def test_widget_without_grouping_renders_bookmark_tiles_with_edit(self):
+        page = StartPage.objects.create(name="Flat", owner=self.user)
+        self.setup_bookmark(url="https://a.test/x", title="AX")
+        StartPageWidget.objects.create(
+            start_page=page,
+            name="Flat",
+            widget_type=StartPageWidget.WIDGET_TYPE_FILTER,
+            filter_query="",
+            domain_grouping=StartPageWidget.DOMAIN_GROUPING_OFF,
+        )
+
+        response = self.client.get(reverse("startpage:detail", args=[page.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "AX")
+        self.assertContains(response, 'class="item-tile-edit"')
 
     def test_404_on_other_users_page(self):
         other_user = self.setup_user()
@@ -111,11 +155,7 @@ class DomainDetailViewTestCase(TestCase, BookmarkFactoryMixin):
         self.client.force_login(self.user)
 
     def test_renders_domain_bookmarks(self):
-        page = StartPage.objects.create(
-            name="Test",
-            owner=self.user,
-            domain_grouping=StartPage.DOMAIN_GROUPING_DOMAIN,
-        )
+        page = StartPage.objects.create(name="Test", owner=self.user)
         self.setup_bookmark(url="https://example.com/a", title="Link A")
         self.setup_bookmark(url="https://example.com/b", title="Link B")
         self.setup_bookmark(url="https://other.org/c", title="Link C")
@@ -123,6 +163,7 @@ class DomainDetailViewTestCase(TestCase, BookmarkFactoryMixin):
             start_page=page,
             name="All",
             widget_type=StartPageWidget.WIDGET_TYPE_FILTER,
+            domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
         )
 
         response = self.client.get(
@@ -156,7 +197,7 @@ class PageNewViewTestCase(TestCase, BookmarkFactoryMixin):
     def test_creates_page(self):
         response = self.client.post(
             reverse("startpage:page.new"),
-            {"name": "New Page", "domain_grouping": "off"},
+            {"name": "New Page"},
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(StartPage.objects.filter(name="New Page").exists())
@@ -164,7 +205,7 @@ class PageNewViewTestCase(TestCase, BookmarkFactoryMixin):
     def test_validation_error(self):
         response = self.client.post(
             reverse("startpage:page.new"),
-            {"name": "", "domain_grouping": "off"},
+            {"name": ""},
         )
         self.assertEqual(response.status_code, 422)
 
@@ -182,12 +223,11 @@ class PageEditViewTestCase(TestCase, BookmarkFactoryMixin):
     def test_updates_page(self):
         response = self.client.post(
             reverse("startpage:page.edit", args=[self.page.id]),
-            {"name": "Updated", "domain_grouping": "domain"},
+            {"name": "Updated"},
         )
         self.assertEqual(response.status_code, 302)
         self.page.refresh_from_db()
         self.assertEqual(self.page.name, "Updated")
-        self.assertEqual(self.page.domain_grouping, "domain")
 
 
 class PageActionViewTestCase(TestCase, BookmarkFactoryMixin):
@@ -227,14 +267,12 @@ class WidgetNewViewTestCase(TestCase, BookmarkFactoryMixin):
                 "filter_shared": "off",
                 "sort": "added_desc",
                 "max_items": 20,
+                "domain_grouping": "domain",
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(
-            StartPageWidget.objects.filter(
-                start_page=self.page, name="New Widget"
-            ).exists()
-        )
+        widget = StartPageWidget.objects.get(start_page=self.page, name="New Widget")
+        self.assertEqual(widget.domain_grouping, "domain")
 
 
 class WidgetEditViewTestCase(TestCase, BookmarkFactoryMixin):
@@ -271,12 +309,14 @@ class WidgetEditViewTestCase(TestCase, BookmarkFactoryMixin):
                 "filter_shared": "off",
                 "sort": "title_asc",
                 "max_items": 10,
+                "domain_grouping": "subdomain",
             },
         )
         self.assertEqual(response.status_code, 302)
         self.widget.refresh_from_db()
         self.assertEqual(self.widget.name, "Updated Widget")
         self.assertEqual(self.widget.sort, "title_asc")
+        self.assertEqual(self.widget.domain_grouping, "subdomain")
 
 
 class WidgetActionViewTestCase(TestCase, BookmarkFactoryMixin):

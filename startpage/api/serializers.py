@@ -12,7 +12,7 @@ from startpage.models import (
 class StartPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = StartPage
-        fields = ["id", "name", "domain_grouping", "order"]
+        fields = ["id", "name", "order"]
         read_only_fields = ["id", "order"]
 
     def create(self, validated_data):
@@ -35,6 +35,7 @@ class StartPageWidgetSerializer(serializers.ModelSerializer):
             "filter_shared",
             "sort",
             "max_items",
+            "domain_grouping",
             "order",
         ]
         read_only_fields = ["id", "order"]
@@ -151,6 +152,7 @@ class PreviewWidgetSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     widget_type = serializers.CharField()
+    domain_grouping = serializers.CharField()
     bookmarks = PreviewBookmarkSerializer(many=True, required=False)
     domain_groups = PreviewDomainGroupSerializer(many=True, required=False)
 
@@ -165,6 +167,5 @@ class PreviewSmartLinkSerializer(serializers.Serializer):
 class PreviewPageSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    domain_grouping = serializers.CharField()
     widgets = PreviewWidgetSerializer(many=True)
     smart_links = PreviewSmartLinkSerializer(many=True)

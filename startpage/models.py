@@ -5,21 +5,7 @@ from django.db import models
 
 
 class StartPage(models.Model):
-    DOMAIN_GROUPING_OFF = "off"
-    DOMAIN_GROUPING_DOMAIN = "domain"
-    DOMAIN_GROUPING_SUBDOMAIN = "subdomain"
-    DOMAIN_GROUPING_CHOICES = [
-        (DOMAIN_GROUPING_OFF, "Off"),
-        (DOMAIN_GROUPING_DOMAIN, "Domain"),
-        (DOMAIN_GROUPING_SUBDOMAIN, "Subdomain"),
-    ]
-
     name = models.CharField(max_length=256)
-    domain_grouping = models.CharField(
-        max_length=10,
-        choices=DOMAIN_GROUPING_CHOICES,
-        default=DOMAIN_GROUPING_OFF,
-    )
     order = models.IntegerField(default=0)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -28,7 +14,6 @@ class StartPage(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 # Regex to find {name} or {name:Label} placeholders in URL templates
@@ -114,6 +99,15 @@ class StartPageWidget(models.Model):
         (WIDGET_TYPE_FILTER, "Custom filter"),
     ]
 
+    DOMAIN_GROUPING_OFF = "off"
+    DOMAIN_GROUPING_DOMAIN = "domain"
+    DOMAIN_GROUPING_SUBDOMAIN = "subdomain"
+    DOMAIN_GROUPING_CHOICES = [
+        (DOMAIN_GROUPING_OFF, "Off"),
+        (DOMAIN_GROUPING_DOMAIN, "Domain"),
+        (DOMAIN_GROUPING_SUBDOMAIN, "Subdomain"),
+    ]
+
     SORT_ADDED_DESC = "added_desc"
     SORT_ADDED_ASC = "added_asc"
     SORT_TITLE_ASC = "title_asc"
@@ -172,6 +166,11 @@ class StartPageWidget(models.Model):
     )
     max_items = models.IntegerField(default=20)
     order = models.IntegerField(default=0)
+    domain_grouping = models.CharField(
+        max_length=10,
+        choices=DOMAIN_GROUPING_CHOICES,
+        default=DOMAIN_GROUPING_OFF,
+    )
 
     class Meta:
         ordering = ["order"]

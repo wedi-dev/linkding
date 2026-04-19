@@ -1,0 +1,18 @@
+[Unit]
+Description=linkding web (uWSGI)
+After=network.target
+
+[Service]
+Type=notify
+User=linkding
+Group=linkding
+WorkingDirectory=/opt/linkding
+EnvironmentFile=-/etc/default/linkding
+Environment=DJANGO_SETTINGS_MODULE=bookmarks.settings.prod
+ExecStart=/opt/linkding/.venv/bin/uwsgi --ini uwsgi.ini --http 127.0.0.1:9090
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

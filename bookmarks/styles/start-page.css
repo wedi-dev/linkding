@@ -170,6 +170,48 @@
   }
 }
 
+/* Bookmark tile wraps an item-box plus an edit affordance */
+.item-tile {
+  position: relative;
+  display: flex;
+  min-width: 0;
+
+  & .item-box {
+    flex: 1;
+    min-width: 0;
+    padding-right: calc(var(--unit-4) + 24px);
+  }
+}
+
+.item-tile-edit {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--border-radius);
+  color: var(--secondary-text-color);
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    background: var(--contrast-20, transparent);
+    color: var(--text-color);
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .item-tile-edit {
+    opacity: 0.85;
+  }
+}
+
 /* Ellipsis direction toggle */
 .ellipsis-toggle {
   display: inline-flex;

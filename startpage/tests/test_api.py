@@ -31,7 +31,7 @@ class StartPageApiTestCase(LinkdingApiTestCase, BookmarkFactoryMixin):
         url = reverse("startpage:pages-list")
         self.post(
             url,
-            {"name": "Work", "domain_grouping": "domain"},
+            {"name": "Work"},
             expected_status_code=status.HTTP_201_CREATED,
         )
         self.post(

@@ -395,9 +395,7 @@ class SmartLinkViewTestCase(TestCase, BookmarkFactoryMixin):
             smart_link=link, name="ticket", label="Ticket number", order=0
         )
 
-        response = self.client.get(
-            reverse("startpage:detail", args=[self.page.id])
-        )
+        response = self.client.get(reverse("startpage:detail", args=[self.page.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Jira PAC")
         self.assertContains(response, "Smart links")
@@ -429,9 +427,7 @@ class SmartLinkModelTestCase(TestCase, BookmarkFactoryMixin):
             url_template="https://example.com/{a}",
             owner=self.user,
         )
-        param = SmartLinkParameter.objects.create(
-            smart_link=link, name="a", order=0
-        )
+        param = SmartLinkParameter.objects.create(smart_link=link, name="a", order=0)
         SmartLinkValue.objects.create(parameter=param, value="test")
 
         link.delete()

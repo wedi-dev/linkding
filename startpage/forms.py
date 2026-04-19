@@ -13,14 +13,10 @@ from startpage.models import SmartLink, StartPage, StartPageWidget
 
 class StartPageForm(forms.ModelForm):
     name = forms.CharField(max_length=256, widget=FormInput)
-    domain_grouping = forms.ChoiceField(
-        choices=StartPage.DOMAIN_GROUPING_CHOICES,
-        widget=FormSelect,
-    )
 
     class Meta:
         model = StartPage
-        fields = ["name", "domain_grouping"]
+        fields = ["name"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, error_class=FormErrorList)
@@ -54,6 +50,10 @@ class StartPageWidgetForm(forms.ModelForm):
         widget=FormSelect,
     )
     max_items = forms.IntegerField(widget=FormNumberInput)
+    domain_grouping = forms.ChoiceField(
+        choices=StartPageWidget.DOMAIN_GROUPING_CHOICES,
+        widget=FormSelect,
+    )
 
     class Meta:
         model = StartPageWidget
@@ -67,6 +67,7 @@ class StartPageWidgetForm(forms.ModelForm):
             "filter_shared",
             "sort",
             "max_items",
+            "domain_grouping",
         ]
 
     def __init__(self, user, *args, **kwargs):
@@ -78,7 +79,9 @@ class SmartLinkForm(forms.ModelForm):
     name = forms.CharField(max_length=256, widget=FormInput)
     url_template = forms.CharField(
         max_length=2048,
-        widget=FormInput(attrs={"placeholder": "https://jira.com/browse/PAC-{ticket:Ticket number}"}),
+        widget=FormInput(
+            attrs={"placeholder": "https://jira.com/browse/PAC-{ticket:Ticket number}"}
+        ),
     )
 
     class Meta:

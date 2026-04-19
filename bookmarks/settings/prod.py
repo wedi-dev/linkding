@@ -14,6 +14,18 @@ from .base import *
 # Turn of debug mode
 DEBUG = False
 
+# Serve collected static files via WhiteNoise (bundle.js, theme css, favicons).
+# Runtime-generated files under data/favicons and data/previews are served by a
+# dynamic view registered in bookmarks.urls at /static/<filename>, which WhiteNoise
+# lets fall through when it does not find the file in STATIC_ROOT.
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 # Try read secret key from file
 try:
     with open(os.path.join(BASE_DIR, "data", "secretkey.txt")) as f:

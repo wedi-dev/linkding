@@ -4,20 +4,10 @@
   {% formfield form.name %}
   {{ form.name.errors }}
 </div>
-<div class="form-group">
-  {% formlabel form.domain_grouping "Domain grouping" %}
-  {% formfield form.domain_grouping has_help=True %}
-  {{ form.domain_grouping.errors }}
-  {% formhelp form.domain_grouping %}
-    Group bookmarks by domain. "Domain" strips subdomains (www.foo.com → foo.com).
-    "Subdomain" keeps full hostnames separate.
-  {% endformhelp %}
-</div>
 <div class="form-footer d-flex mt-4">
   <input type="submit"
          name="save"
          value="Save"
          class="btn btn-primary btn-wide">
-  <a href="{% url 'startpage:hub' %}"
-     class="btn btn-wide ml-auto">Cancel</a>
+  <a href="{% url 'startpage:hub' %}" class="btn btn-wide ml-auto">Cancel</a>
 </div>

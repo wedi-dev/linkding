@@ -92,10 +92,11 @@ class StartPageViewSet(
                 "id": w.id,
                 "name": w.name,
                 "widget_type": w.widget_type,
+                "domain_grouping": w.domain_grouping,
             }
-            if page.domain_grouping != StartPage.DOMAIN_GROUPING_OFF:
+            if w.domain_grouping != StartPageWidget.DOMAIN_GROUPING_OFF:
                 payload["domain_groups"] = group_bookmarks_by_domain(
-                    bookmarks, page.domain_grouping
+                    bookmarks, w.domain_grouping
                 )
             else:
                 payload["bookmarks"] = bookmarks
@@ -115,9 +116,8 @@ class StartPageViewSet(
         ]
 
         requested_format = request.GET.get("format")
-        accepts_md = (
-            requested_format == "md"
-            or "text/markdown" in request.META.get("HTTP_ACCEPT", "")
+        accepts_md = requested_format == "md" or "text/markdown" in request.META.get(
+            "HTTP_ACCEPT", ""
         )
         if accepts_md:
             body = md_preview.render_page_markdown(
@@ -128,10 +128,7 @@ class StartPageViewSet(
         data = {
             "id": page.id,
             "name": page.name,
-            "domain_grouping": page.domain_grouping,
-            "widgets": [
-                PreviewWidgetSerializer(w).data for w in widget_payloads
-            ],
+            "widgets": [PreviewWidgetSerializer(w).data for w in widget_payloads],
             "smart_links": [
                 PreviewSmartLinkSerializer(sl).data for sl in smart_link_payloads
             ],

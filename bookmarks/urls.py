@@ -17,6 +17,7 @@ from bookmarks.views.health import health as health_view
 from bookmarks.views.manifest import manifest as manifest_view
 from bookmarks.views.opensearch import opensearch as opensearch_view
 from bookmarks.views.root import root as root_view
+from bookmarks.views.static_data import data_static as data_static_view
 
 urlpatterns = [
     # Root view handling redirection based on user authentication
@@ -148,6 +149,13 @@ urlpatterns += [
 
 # Start page
 urlpatterns.append(path("start/", include("startpage.urls")))
+
+# Dynamic static data (runtime-generated favicons and preview images).
+# WhiteNoise serves collected static assets first; for anything it doesn't
+# know about under /static/, this view looks in data/favicons and data/previews.
+urlpatterns.append(
+    re_path(r"^static/(?P<filename>[^/]+)$", data_static_view, name="data_static")
+)
 
 # Admin
 urlpatterns.append(path("admin/", linkding_admin_site.urls))

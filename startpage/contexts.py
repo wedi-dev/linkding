@@ -16,7 +16,7 @@ class StartPageBookmarkItem:
 
 
 class WidgetContext:
-    def __init__(self, widget, user, profile, domain_grouping, page_id=None):
+    def __init__(self, widget, user, profile, page_id=None):
         self.widget = widget
         self.id = widget.id
         self.name = widget.name
@@ -29,14 +29,25 @@ class WidgetContext:
         self.show_favicons = profile.enable_favicons
         self.link_target = profile.bookmark_link_target
 
-        if domain_grouping != StartPage.DOMAIN_GROUPING_OFF:
-            self.groups = group_bookmarks_by_domain(bookmarks, domain_grouping)
-            # Add page_id to groups for URL building in templates
-            for group in self.groups:
-                group.page_id = page_id
+        grouping = widget.domain_grouping
+        if grouping != StartPageWidget.DOMAIN_GROUPING_OFF:
+            groups = group_bookmarks_by_domain(bookmarks, grouping)
+            multi_groups = []
+            leaf_bookmarks = []
+            for group in groups:
+                if group.count == 1:
+                    leaf_bookmarks.append(group.bookmarks[0])
+                else:
+                    group.page_id = page_id
+                    multi_groups.append(group)
+            self.groups = multi_groups
+            self.leaf_items = [
+                StartPageBookmarkItem(bm, profile) for bm in leaf_bookmarks
+            ]
             self.items = None
         else:
             self.groups = None
+            self.leaf_items = None
             self.items = [StartPageBookmarkItem(bm, profile) for bm in bookmarks]
 
 
@@ -54,7 +65,6 @@ class StartPageDetailContext:
     def __init__(self, request, start_page):
         self.start_page = start_page
         self.name = start_page.name
-        self.domain_grouping = start_page.domain_grouping
 
         user = request.user
         profile = request.user_profile
@@ -63,10 +73,7 @@ class StartPageDetailContext:
         )
 
         self.widgets = [
-            WidgetContext(
-                w, user, profile, start_page.domain_grouping, page_id=start_page.id
-            )
-            for w in widgets
+            WidgetContext(w, user, profile, page_id=start_page.id) for w in widgets
         ]
 
         smart_links = SmartLink.objects.filter(start_page=start_page).order_by("order")
@@ -84,34 +91,32 @@ class DomainDetailContext:
 
         user = request.user
         profile = request.user_profile
-        grouping = start_page.domain_grouping
 
-        # Collect bookmarks from all widgets, filter to matching domain
-        all_bookmarks = []
+        # Collect bookmarks from widgets with grouping enabled, matching this domain key
+        filtered = []
+        seen_ids = set()
         widgets = StartPageWidget.objects.filter(start_page=start_page).order_by(
             "order"
         )
         for widget in widgets:
+            grouping = widget.domain_grouping
+            if grouping == StartPageWidget.DOMAIN_GROUPING_OFF:
+                continue
             qs = query_widget_bookmarks(user, profile, widget)
             bookmarks = list(qs[: widget.max_items])
             models.prefetch_related_objects(bookmarks, "tags")
-            all_bookmarks.extend(bookmarks)
-
-        # Filter to this domain
-        filtered = []
-        seen_ids = set()
-        for bm in all_bookmarks:
-            if bm.id in seen_ids:
-                continue
-            domain = extract_domain(bm.url)
-            key = (
-                domain
-                if grouping == StartPage.DOMAIN_GROUPING_SUBDOMAIN
-                else get_registrable_domain(domain)
-            )
-            if key == domain_key:
-                filtered.append(bm)
-                seen_ids.add(bm.id)
+            for bm in bookmarks:
+                if bm.id in seen_ids:
+                    continue
+                domain = extract_domain(bm.url)
+                key = (
+                    domain
+                    if grouping == StartPageWidget.DOMAIN_GROUPING_SUBDOMAIN
+                    else get_registrable_domain(domain)
+                )
+                if key == domain_key:
+                    filtered.append(bm)
+                    seen_ids.add(bm.id)
 
         self.items = [StartPageBookmarkItem(bm, profile) for bm in filtered]
         self.total_count = len(self.items)

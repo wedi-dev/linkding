@@ -11,7 +11,6 @@ class StartPageModelTestCase(TestCase, BookmarkFactoryMixin):
     def test_create_start_page(self):
         page = StartPage.objects.create(name="Test Page", owner=self.user)
         self.assertEqual(page.name, "Test Page")
-        self.assertEqual(page.domain_grouping, StartPage.DOMAIN_GROUPING_OFF)
         self.assertEqual(page.order, 0)
         self.assertEqual(page.owner, self.user)
 
@@ -38,6 +37,16 @@ class StartPageWidgetModelTestCase(TestCase, BookmarkFactoryMixin):
         )
         self.assertEqual(widget.name, "Bundle Widget")
         self.assertEqual(widget.bundle, bundle)
+        self.assertEqual(widget.domain_grouping, StartPageWidget.DOMAIN_GROUPING_OFF)
+
+    def test_widget_domain_grouping_default_and_set(self):
+        widget = StartPageWidget.objects.create(
+            start_page=self.page,
+            name="W",
+            widget_type=StartPageWidget.WIDGET_TYPE_FILTER,
+            domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
+        )
+        self.assertEqual(widget.domain_grouping, "domain")
 
     def test_create_widget_tag_type(self):
         widget = StartPageWidget.objects.create(

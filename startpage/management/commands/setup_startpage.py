@@ -42,9 +42,7 @@ class Command(BaseCommand):
                 )
                 continue
 
-            page = StartPage(
-                name=page_name, domain_grouping=StartPage.DOMAIN_GROUPING_DOMAIN
-            )
+            page = StartPage(name=page_name)
             services.create_start_page(page, user)
             widget_count = 0
 
@@ -55,6 +53,7 @@ class Command(BaseCommand):
                     name=bundle.name,
                     widget_type=StartPageWidget.WIDGET_TYPE_BUNDLE,
                     bundle=bundle,
+                    domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
                 )
                 services.create_widget(widget, page)
                 widget_count += 1
@@ -71,6 +70,7 @@ class Command(BaseCommand):
                         name=tag.name,
                         widget_type=StartPageWidget.WIDGET_TYPE_TAG,
                         tag_name=tag.name,
+                        domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
                     )
                     services.create_widget(widget, page)
                     widget_count += 1
@@ -81,6 +81,7 @@ class Command(BaseCommand):
                     name="All bookmarks",
                     widget_type=StartPageWidget.WIDGET_TYPE_FILTER,
                     filter_query="",
+                    domain_grouping=StartPageWidget.DOMAIN_GROUPING_DOMAIN,
                 )
                 services.create_widget(widget, page)
                 widget_count += 1

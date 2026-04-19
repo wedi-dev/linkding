@@ -57,6 +57,15 @@
       Maximum number of bookmarks to show in this widget.
     {% endformhelp %}
   </div>
+  <div class="form-group">
+    {% formlabel form.domain_grouping "Domain grouping" %}
+    {% formfield form.domain_grouping has_help=True %}
+    {{ form.domain_grouping.errors }}
+    {% formhelp form.domain_grouping %}
+      Group bookmarks by domain. "Domain" strips subdomains (www.foo.com → foo.com).
+      "Subdomain" keeps full hostnames separate. Groups with a single bookmark are shown as direct links.
+    {% endformhelp %}
+  </div>
 </ld-widget-form>
 <div class="form-footer d-flex mt-4">
   <input type="submit"

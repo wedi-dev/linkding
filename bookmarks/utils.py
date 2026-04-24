@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 import re
 import unicodedata
 import urllib.parse
@@ -16,6 +17,15 @@ try:
 except Exception as exc:
     logging.exception(exc)
     app_version = ""
+
+# Bust the ?v=<app_version> cache on each rebuild — version.txt rarely changes,
+# so append mtime of a known built asset. Falls back silently if not present.
+for _asset in ("bookmarks/static/theme-light.css", "bookmarks/static/bundle.js"):
+    try:
+        app_version = f"{app_version}.{int(os.path.getmtime(_asset))}"
+        break
+    except OSError:
+        continue
 
 
 def unique(elements, key):
